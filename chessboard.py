@@ -61,12 +61,49 @@ class Board():
         print("Length of path:", len(path))
         return path
 
-# %%
-chessboard = Board(5, 3)
+    def all_paths(self, i, j, limit):
+ 
+        all = 0
+        path = []
+        def dfs(i, j, path, limit):
+            path.append((i, j))
+            if len(path) == limit:
+                    nonlocal all
+                    return path
+
+            for x in self.graph[i][j]:
+                if x not in path:
+                    i, j = x
+                    tour = dfs(i, j, path, limit)
+                    if tour:
+                        all += 1
+                        path.pop()
+            else:
+                path.pop()
+
+        dfs(i, j, path, limit)  
+        return all
+
+    def plot_paths(self):
+
+        arr = np.zeros((self.width, self.height))
+
+        for i in range(self.width):
+            for j in range(self.height):
+                arr[i][j] = chessboard.all_paths(i, j, self.width * self.height)
+
+        fig, ax = plt.subplots(figsize = (6, 6))
+        ax.imshow(arr, cmap = "Purples", vmin = 0, vmax = 0.1)
+        for i in range(self.width):
+            for j in range(self.height):
+                text = ax.text(j, i, arr[i, j].astype(int),
+                            ha="center", va="center", color="y", size = "xx-large")
+        plt.show()
+
+#%%
+chessboard = Board(5, 5)
 chessboard.create_graph()
 chessboard.add_edges()
 chessboard.warnsdorff_graph()
 #%%
-chessboard.traverse()
 
-# %%

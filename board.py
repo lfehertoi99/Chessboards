@@ -43,21 +43,22 @@ class Board():
             i, j = random.randint(0, self.width-1), random.randint(0, self.height-1)
         if start:
             i, j = start
-        
+        print("Starting square: %d,%d" % (i, j))
         neighbours = self.graph[i][j]
-        path = []
+        path = [(i, j)]
         visited = set()
 
         while neighbours != []:
-            path += [(i, j)]
-            w_index = [*zip(neighbours, [self.warnsdorff[r][s] for r, s in neighbours])]
-            w_index = sorted(w_index, key = lambda x: x[1])
-            next_square = w_index[0][0]
-            visited.add((i, j))
-        
-            i, j = next_square
-            neighbours = [x for x in self.graph[i][j] if x not in visited]
-
+            w_index = [*zip(neighbours, [self.warnsdorff[r][s] for r, s in neighbours])] #get w-index of neighbours
+            w_index = sorted(w_index, key = lambda x: x[1]) #sort in ascending order of w-index
+            next_square = w_index[0][0] #select square with lowest index
+            for x,y in neighbours: #reduce w-index of neighbours by 1
+                self.warnsdorff[x][y] -= 1
+            visited.add((i, j)) #add current square to visited
+            i, j = next_square #update square 
+            path += [(i, j)] #add current square to path
+            neighbours = [x for x in self.graph[i][j] if x not in visited] #update neighbours
+        print("Length of path:", len(path))
         return path
 
 # %%
@@ -66,3 +67,5 @@ chessboard.create_graph()
 chessboard.add_edges()
 chessboard.warnsdorff_graph()
 chessboard.traverse()
+
+# %%
